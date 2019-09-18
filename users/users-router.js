@@ -1,32 +1,14 @@
-const db = require('../database/dbConfig.js');
+const router = require("express").Router();
 
-module.exports = {
-  add,
-  find,
-  findBy,
-  findById,
-};
+const Users = require("./users-model.js");
+const restricted = require("../auth/restricted-middleware.js");
 
-function find() {
-  return db('users').select('id', 'username', 'password');
-}
+router.get("/", (req, res) => {
+  Users.find()
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.send(err));
+});
 
-function findBy(filter) {
-  return db('users').where(filter);
-}
-
-function add(user) {
-  return db('users')
-    .insert(user, 'id')
-    .then(ids => {
-      console.log(ids)
-      const [id] = ids;
-      return findById(id);
-    });
-}
-
-function findById(id) {
-  return db('users')
-    .where({ id })
-    .first();
-}
+module.exports = router;
